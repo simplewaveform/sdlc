@@ -1,0 +1,109 @@
+.detail {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.back {
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  background: none;
+  border: none;
+  color: #1a1a2e;
+  font-size: 0.95rem;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.media {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e8e8e8;
+  margin-bottom: 1.5rem;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.model {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.year {
+  margin: 0 0 0.25rem;
+  color: #555;
+}
+
+.price {
+  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+}
+
+.section {
+  margin: 1.5rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.specs {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.specs li {
+  margin: 0.25rem 0;
+}
+
+.book {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #1a1a2e;
+  border: none;
+  border-radius: 8px;
+}
+
+.book:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background: #fff;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  color: #c00;
+  background: #fff5f5;
+  border-radius: 12px;
+  margin: 0;
+}

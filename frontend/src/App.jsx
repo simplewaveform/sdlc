@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Catalog } from './pages/Catalog';
+import { CarDetail } from './pages/CarDetail';
 import { Layout } from './components/Layout';
 
 export default function App() {
@@ -7,6 +8,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Catalog />} />
+        <Route path="/cars/:id" element={<CarDetail />} />
       </Route>
     </Routes>
   );
