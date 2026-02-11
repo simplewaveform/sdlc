@@ -26,6 +26,9 @@ Thumbs.db
 coverage/
 .nyc_output/
 
+# SQLite
+backend/data/
+
 # Misc
 *.tgz
 .cache/

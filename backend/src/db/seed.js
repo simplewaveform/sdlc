@@ -1,11 +1,11 @@
-import { pool } from './pool.js';
+import { getDb, initSchema } from './db.js';
 
 const cars = [
   {
     model: 'Geely Coolray',
     year: 2023,
     price_per_day_byn: 95,
-    image_url: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800',
+    image_url: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=800',
     description: 'Компактный кроссовер с современным оснащением. Подходит для города и поездок за город.',
     transmission: 'Автомат',
     fuel: 'Бензин',
@@ -63,34 +63,27 @@ const cars = [
   },
 ];
 
-async function seed() {
-  const client = await pool.connect();
-  try {
-    await client.query('DELETE FROM cars');
-    for (const c of cars) {
-      await client.query(
-        `INSERT INTO cars (model, year, price_per_day_byn, image_url, description, transmission, fuel, engine_volume)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [
-          c.model,
-          c.year,
-          c.price_per_day_byn,
-          c.image_url,
-          c.description,
-          c.transmission,
-          c.fuel,
-          c.engine_volume,
-        ]
-      );
-    }
-    console.log(`Seeded ${cars.length} cars.`);
-  } finally {
-    client.release();
-    await pool.end();
+function seed() {
+  initSchema();
+  const database = getDb();
+  database.prepare('DELETE FROM cars').run();
+  const stmt = database.prepare(
+    `INSERT INTO cars (model, year, price_per_day_byn, image_url, description, transmission, fuel, engine_volume)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+  );
+  for (const c of cars) {
+    stmt.run(
+      c.model,
+      c.year,
+      c.price_per_day_byn,
+      c.image_url,
+      c.description,
+      c.transmission,
+      c.fuel,
+      c.engine_volume
+    );
   }
+  console.log(`Seeded ${cars.length} cars.`);
 }
 
-seed().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+seed();

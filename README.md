@@ -3,37 +3,30 @@
 Веб-сервис каталога автомобилей (первая итерация: без функционала аренды).
 
 - **Фронт:** React (Vite)
-- **Бэк:** Node.js, Express, PostgreSQL
+- **Бэк:** Node.js, Express
+- **БД:** SQLite (файл `backend/data/cars.db`) — ничего ставить не нужно. Позже можно заменить на Postgres, поменяв только слой `backend/src/db/`.
 
 ## Запуск
 
-### Бэкенд
+**Бэкенд** (в папке `backend`):
 
-1. Установить PostgreSQL, создать БД:
-   ```bash
-   createdb car_rental
-   ```
-2. В папке `backend`:
-   ```bash
-   cp .env.example .env
-   # при необходимости отредактировать .env (PORT, DATABASE_URL)
-   npm install
-   npm run db:init
-   npm run db:seed
-   npm run dev
-   ```
-   API: http://localhost:3001
+```bash
+npm install
+npm run db:seed
+npm run dev
+```
 
-### Фронтенд
+Сервер: http://localhost:3001  
+При первом запуске таблица создаётся сама. `db:seed` — один раз, чтобы заполнить каталог тестовыми авто.
 
-В папке `frontend`:
+**Фронтенд** (в папке `frontend`):
 
 ```bash
 npm install
 npm run dev
 ```
 
-Приложение: http://localhost:5173 (прокси на API настроен в Vite).
+Приложение: http://localhost:5173
 
 ## Первая итерация
 

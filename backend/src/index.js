@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { initSchema } from './db/db.js';
 import { carsRouter } from './routes/cars.js';
+
+initSchema();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
