@@ -3,6 +3,34 @@
 
 ---
 
+## Как оформить UML-диаграммы в отчёте (для GitHub)
+
+В отчёте обычно нужно минимум **2 “картинки”** (часть 1 и часть 2). Есть два удобных варианта:
+
+### Вариант A — Mermaid (рендерится прямо в GitHub)
+
+- Пишешь диаграмму в Markdown блоке:
+
+```mermaid
+flowchart TD
+  A[Frontend] --> B[Backend]
+```
+
+- GitHub сам отрисует её как диаграмму (это визуально выглядит как картинка в отчёте).
+
+### Вариант B — PlantUML (делаешь SVG/PNG и вставляешь как файл)
+
+1. Создай файл, например `docs/diagrams/to-be-deployment.puml`.
+2. Сгенерируй изображение (`.svg` или `.png`) любым способом (локально или через онлайн‑рендер).
+3. Положи картинку в репозиторий, например `docs/diagrams/to-be-deployment.svg`.
+4. Вставь в отчёт:
+
+```md
+![Диаграмма развертывания To-Be](docs/diagrams/to-be-deployment.svg)
+```
+
+Ниже в отчёте диаграммы приведены в формате **Mermaid** (их можно оставить так или при необходимости экспортировать в SVG/PNG).
+
 # Часть 1: Проектирование архитектуры системы
 
 **Проект:** Сервис аренды автомобилей  
@@ -49,56 +77,33 @@
 
 ## 6. Структурная схема приложения (Архитектура To-Be)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    BROWSER (Client-Side)                     │
-├─────────────────────────────────────────────────────────────┤
-│  Presentation Layer (React SPA)                              │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Pages: Catalog, CarDetails                            │   │
-│  │ Components: CarCard, CatalogFilters, Layout          │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ State Management: Redux/Context API                  │   │
-│  │ API Client: Axios                                    │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ HTTPS / JSON
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              SERVER SIDE (Node.js + Express)                  │
-├─────────────────────────────────────────────────────────────┤
-│  Service Layer (REST API Routes)                             │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Cross-Cutting Concerns:                              │   │
-│  │ • Auth Middleware (JWT)                              │   │
-│  │ • Logger (Morgan/Winston)                             │   │
-│  │ • Error Handler                                      │   │
-│  │ • Request Validator (Zod/Joi)                        │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Business Layer:                                       │   │
-│  │ • CarService (Business Logic)                        │   │
-│  │ • BookingService (Calculations)                      │   │
-│  │ • AuthService                                         │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Data Access Layer (DAL):                             │   │
-│  │ • ORM / Query Builder (Sequelize/Prisma)             │   │
-│  │ • Repositories Pattern                                │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ SQL Queries
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    DATA SOURCES                              │
-│  ┌──────────────────┐         ┌──────────────────┐         │
-│  │ PostgreSQL DB    │         │ Cloud Storage    │         │
-│  │ • Users           │         │ • Car Images     │         │
-│  │ • Cars            │         │                  │         │
-│  │ • Orders          │         │                  │         │
-│  └──────────────────┘         └──────────────────┘         │
-└─────────────────────────────────────────────────────────────┘
+![UML-диаграмма развертывания (To-Be)](ЛР3/deployment-diagram.svg)
+
+```mermaid
+flowchart TD
+  subgraph Browser["Browser (Client-Side)"]
+    UI["Presentation Layer: React SPA"]
+    Pages["Pages: Catalog, CarDetail, Admin (planned)"]
+    Components["Components: CarCard, Filter, Navbar"]
+    State["State Management: Redux/Context (planned)"]
+    ApiClient["API Client: Axios (planned)"]
+    UI --> Pages --> Components
+    UI --> State --> ApiClient
+  end
+
+  ApiClient -->|"HTTPS / JSON"| Routes
+
+  subgraph Server["Server (Node.js + Express)"]
+    Routes["Service Layer: REST API Routes"]
+    Cross["Cross-Cutting: Auth (JWT), Logging, Validation, Error Handling"]
+    Biz["Business Layer: CarService, BookingService, AuthService"]
+    Dal["DAL: ORM / Query Builder + Repositories"]
+    Routes --> Cross
+    Routes --> Biz --> Dal
+  end
+
+  Dal -->|"SQL"| DB["PostgreSQL: Users, Cars, Orders"]
+  Dal -.-> FileStore["Cloud Storage: car images (planned)"]
 ```
 
 ### Описание слоев функциональности:
@@ -147,106 +152,64 @@ sdlc/
 
 ### Диаграмма архитектуры As Is
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    BROWSER (Client-Side)                     │
-├─────────────────────────────────────────────────────────────┤
-│  React Application                                            │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Pages: Catalog, CarDetail                            │   │
-│  │ Components: CarCard, CatalogFilters, Layout        │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ State: useState (локальное состояние)                 │   │
-│  │ API Client: fetch (нативный браузерный API)           │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ HTTP / JSON
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              SERVER SIDE (Node.js + Express)                  │
-├─────────────────────────────────────────────────────────────┤
-│  Express Application                                          │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Routes Layer:                                         │   │
-│  │ • /api/cars (GET) - список авто                       │   │
-│  │ • /api/cars/:id (GET) - детали авто                   │   │
-│  │ • /api/health (GET) - проверка здоровья               │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Middleware:                                           │   │
-│  │ • CORS                                                │   │
-│  │ • express.json()                                     │   │
-│  │ • Error handler (базовый)                             │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │ Data Access:                                         │   │
-│  │ • Прямые SQL запросы (better-sqlite3)                │   │
-│  │ • Нет ORM, нет Repository Pattern                    │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ SQL Queries
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    DATA SOURCES                              │
-│  ┌──────────────────┐                                      │
-│  │ SQLite Database   │                                      │
-│  │ • cars table      │                                      │
-│  │ (файл cars.db)    │                                      │
-│  └──────────────────┘                                      │
-└─────────────────────────────────────────────────────────────┘
+![Диаграмма архитектуры (As-Is)](ЛР3/as-is-diagram.svg)
+
+```mermaid
+flowchart TD
+  subgraph Browser["Browser (Client-Side)"]
+    UI["React SPA"]
+    Pages["Pages: Catalog, CarDetail"]
+    Components["Components: CarCard, CatalogFilters, Layout"]
+    LocalState["State: useState (local)"]
+    Fetch["API Client: fetch()"]
+    UI --> Pages --> Components
+    UI --> LocalState --> Fetch
+  end
+
+  Fetch -->|"HTTP / JSON"| Routes
+
+  subgraph Server["Server (Node.js + Express)"]
+    Routes["Routes: /api/cars, /api/cars/:id, /api/health"]
+    MW["Middleware: cors, express.json, basic error handler"]
+    DAL["Data access: direct SQL (better-sqlite3)"]
+    Routes --> MW
+    Routes --> DAL
+  end
+
+  DAL -->|"SQL"| SQLite["SQLite DB file (cars.db): table cars"]
 ```
 
 ### Диаграмма классов (упрощенная)
 
-```
-┌─────────────────────┐
-│   Express App       │
-│  (index.js)         │
-└──────────┬──────────┘
-           │ uses
-           ▼
-┌─────────────────────┐
-│   carsRouter        │
-│  (routes/cars.js)   │
-│  - get('/')         │
-│  - get('/:id')      │
-└──────────┬──────────┘
-           │ uses
-           ▼
-┌─────────────────────┐
-│   Database          │
-│  (db/db.js)         │
-│  + getDb()          │
-│  + initSchema()     │
-└─────────────────────┘
+```mermaid
+classDiagram
+  direction LR
 
-┌─────────────────────┐
-│   React App         │
-│  (App.jsx)          │
-└──────────┬──────────┘
-           │ contains
-           ▼
-┌─────────────────────┐      ┌─────────────────────┐
-│   Catalog           │      │   CarDetail         │
-│  (pages/Catalog.jsx)│      │  (pages/CarDetail)  │
-│  - cars: []        │      │  - car: object      │
-│  - loading: bool    │      │  - loading: bool    │
-│  - error: string    │      │  - error: string    │
-└──────────┬──────────┘      └──────────┬──────────┘
-           │ uses                       │ uses
-           ▼                            ▼
-┌─────────────────────┐      ┌─────────────────────┐
-│   CarCard           │      │   fetchCarById()    │
-│  (components/)      │      │   (api/cars.js)     │
-└─────────────────────┘      └─────────────────────┘
-           │
-           │ uses
-           ▼
-┌─────────────────────┐
-│   fetchCars()        │
-│  (api/cars.js)      │
-└─────────────────────┘
+  class ExpressApp["Express App (backend/src/index.js)"]
+  class CarsRouter["carsRouter (backend/src/routes/cars.js)"] {
+    +GET /api/cars
+    +GET /api/cars/:id
+  }
+  class Db["DB module (backend/src/db/db.js)"] {
+    +getDb()
+    +initSchema()
+  }
+
+  ExpressApp --> CarsRouter : mounts
+  CarsRouter --> Db : queries
+
+  class ReactApp["React App (frontend/src/App.jsx)"]
+  class Catalog["Catalog page (frontend/src/pages/Catalog.jsx)"]
+  class CarDetail["CarDetail page (frontend/src/pages/CarDetail.jsx)"]
+  class CarsApi["cars API client (frontend/src/api/cars.js)"] {
+    +fetchCars(params)
+    +fetchCarById(id)
+  }
+
+  ReactApp --> Catalog : route /
+  ReactApp --> CarDetail : route /cars/:id
+  Catalog --> CarsApi : fetchCars()
+  CarDetail --> CarsApi : fetchCarById()
 ```
 
 ### Ключевые особенности текущей реализации:
@@ -294,31 +257,15 @@ sdlc/
 
 ### Визуальное сравнение слоев
 
-```
-TO BE:                          AS IS:
-┌─────────────┐                ┌─────────────┐
-│ Presentation│                │ Presentation│
-│   (React)   │                │   (React)   │
-└──────┬──────┘                └──────┬──────┘
-       │                               │
-┌──────▼──────┐                ┌──────▼──────┐
-│   Service   │                │   Routes    │
-│   Layer     │                │   (Express) │
-└──────┬──────┘                └──────┬──────┘
-       │                               │
-┌──────▼──────┐                ┌──────▼──────┐
-│  Business   │                │     DB      │
-│   Layer     │                │  (SQLite)   │
-└──────┬──────┘                └─────────────┘
-       │
-┌──────▼──────┐
-│     DAL     │
-│  (ORM/Repo) │
-└──────┬──────┘
-       │
-┌──────▼──────┐
-│ PostgreSQL │
-└─────────────┘
+```mermaid
+flowchart LR
+  subgraph ToBe["TO BE (целевая архитектура)"]
+    P1["Presentation (React)"] --> S1["Service Layer"] --> B1["Business Layer"] --> D1["DAL (ORM/Repo)"] --> PG["PostgreSQL"]
+  end
+
+  subgraph AsIs["AS IS (текущая реализация)"]
+    P2["Presentation (React)"] --> R2["Routes (Express)"] --> SQ["DB (SQLite)"]
+  end
 ```
 
 ## 3.2 Анализ причин отличий

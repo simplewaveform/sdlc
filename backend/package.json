@@ -1,7 +1,7 @@
 {
   "name": "car-rental-backend",
   "version": "1.0.0",
-  "description": "Car rental API — catalog (Node + Postgres)",
+  "description": "Car rental API — catalog (Node + SQLite)",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
