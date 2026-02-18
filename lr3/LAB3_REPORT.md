@@ -1,36 +1,6 @@
 # Лабораторная работа №3
 ## «Исследование архитектурного решения»
 
----
-
-## Как оформить UML-диаграммы в отчёте (для GitHub)
-
-В отчёте обычно нужно минимум **2 “картинки”** (часть 1 и часть 2). Есть два удобных варианта:
-
-### Вариант A — Mermaid (рендерится прямо в GitHub)
-
-- Пишешь диаграмму в Markdown блоке:
-
-```mermaid
-flowchart TD
-  A[Frontend] --> B[Backend]
-```
-
-- GitHub сам отрисует её как диаграмму (это визуально выглядит как картинка в отчёте).
-
-### Вариант B — PlantUML (делаешь SVG/PNG и вставляешь как файл)
-
-1. Создай файл, например `docs/diagrams/to-be-deployment.puml`.
-2. Сгенерируй изображение (`.svg` или `.png`) любым способом (локально или через онлайн‑рендер).
-3. Положи картинку в репозиторий, например `docs/diagrams/to-be-deployment.svg`.
-4. Вставь в отчёт:
-
-```md
-![Диаграмма развертывания To-Be](docs/diagrams/to-be-deployment.svg)
-```
-
-Ниже в отчёте диаграммы приведены в формате **Mermaid** (их можно оставить так или при необходимости экспортировать в SVG/PNG).
-
 # Часть 1: Проектирование архитектуры системы
 
 **Проект:** Сервис аренды автомобилей  
@@ -77,34 +47,7 @@ flowchart TD
 
 ## 6. Структурная схема приложения (Архитектура To-Be)
 
-![UML-диаграмма развертывания (To-Be)](ЛР3/deployment-diagram.svg)
-
-```mermaid
-flowchart TD
-  subgraph Browser["Browser (Client-Side)"]
-    UI["Presentation Layer: React SPA"]
-    Pages["Pages: Catalog, CarDetail, Admin (planned)"]
-    Components["Components: CarCard, Filter, Navbar"]
-    State["State Management: Redux/Context (planned)"]
-    ApiClient["API Client: Axios (planned)"]
-    UI --> Pages --> Components
-    UI --> State --> ApiClient
-  end
-
-  ApiClient -->|"HTTPS / JSON"| Routes
-
-  subgraph Server["Server (Node.js + Express)"]
-    Routes["Service Layer: REST API Routes"]
-    Cross["Cross-Cutting: Auth (JWT), Logging, Validation, Error Handling"]
-    Biz["Business Layer: CarService, BookingService, AuthService"]
-    Dal["DAL: ORM / Query Builder + Repositories"]
-    Routes --> Cross
-    Routes --> Biz --> Dal
-  end
-
-  Dal -->|"SQL"| DB["PostgreSQL: Users, Cars, Orders"]
-  Dal -.-> FileStore["Cloud Storage: car images (planned)"]
-```
+![UML-диаграмма развертывания (To-Be)](deployment-diagram.svg)
 
 ### Описание слоев функциональности:
 
@@ -152,65 +95,10 @@ sdlc/
 
 ### Диаграмма архитектуры As Is
 
-![Диаграмма архитектуры (As-Is)](ЛР3/as-is-diagram.svg)
-
-```mermaid
-flowchart TD
-  subgraph Browser["Browser (Client-Side)"]
-    UI["React SPA"]
-    Pages["Pages: Catalog, CarDetail"]
-    Components["Components: CarCard, CatalogFilters, Layout"]
-    LocalState["State: useState (local)"]
-    Fetch["API Client: fetch()"]
-    UI --> Pages --> Components
-    UI --> LocalState --> Fetch
-  end
-
-  Fetch -->|"HTTP / JSON"| Routes
-
-  subgraph Server["Server (Node.js + Express)"]
-    Routes["Routes: /api/cars, /api/cars/:id, /api/health"]
-    MW["Middleware: cors, express.json, basic error handler"]
-    DAL["Data access: direct SQL (better-sqlite3)"]
-    Routes --> MW
-    Routes --> DAL
-  end
-
-  DAL -->|"SQL"| SQLite["SQLite DB file (cars.db): table cars"]
-```
+![Диаграмма архитектуры (As-Is)](as-is-diagram.svg)
 
 ### Диаграмма классов (упрощенная)
-
-```mermaid
-classDiagram
-  direction LR
-
-  class ExpressApp["Express App (backend/src/index.js)"]
-  class CarsRouter["carsRouter (backend/src/routes/cars.js)"] {
-    +GET /api/cars
-    +GET /api/cars/:id
-  }
-  class Db["DB module (backend/src/db/db.js)"] {
-    +getDb()
-    +initSchema()
-  }
-
-  ExpressApp --> CarsRouter : mounts
-  CarsRouter --> Db : queries
-
-  class ReactApp["React App (frontend/src/App.jsx)"]
-  class Catalog["Catalog page (frontend/src/pages/Catalog.jsx)"]
-  class CarDetail["CarDetail page (frontend/src/pages/CarDetail.jsx)"]
-  class CarsApi["cars API client (frontend/src/api/cars.js)"] {
-    +fetchCars(params)
-    +fetchCarById(id)
-  }
-
-  ReactApp --> Catalog : route /
-  ReactApp --> CarDetail : route /cars/:id
-  Catalog --> CarsApi : fetchCars()
-  CarDetail --> CarsApi : fetchCarById()
-```
+![Диаграмма архитектуры (As-Is)](class-diagram.svg)
 
 ### Ключевые особенности текущей реализации:
 
@@ -257,22 +145,13 @@ classDiagram
 
 ### Визуальное сравнение слоев
 
-```mermaid
-flowchart LR
-  subgraph ToBe["TO BE (целевая архитектура)"]
-    P1["Presentation (React)"] --> S1["Service Layer"] --> B1["Business Layer"] --> D1["DAL (ORM/Repo)"] --> PG["PostgreSQL"]
-  end
-
-  subgraph AsIs["AS IS (текущая реализация)"]
-    P2["Presentation (React)"] --> R2["Routes (Express)"] --> SQ["DB (SQLite)"]
-  end
-```
+![Сравнение слоев](compare.svg)
 
 ## 3.2 Анализ причин отличий
 
 ### 1. Упрощение для первой итерации
 
-**Причина:** Проект находится на ранней стадии разработки (первая итерация — только каталог без функционала аренды). Команда сознательно упростила архитектуру для быстрого прототипирования.
+**Причина:** Проект находится на ранней стадии разработки. Команда сознательно упростила архитектуру для быстрого прототипирования.
 
 **Обоснование:**
 - SQLite вместо PostgreSQL — не требует установки внешней СУБД, упрощает локальную разработку
@@ -290,16 +169,15 @@ flowchart LR
 
 ### 3. Ограничения времени и ресурсов
 
-**Причина:** Групповой проект с ограниченным временем на первую итерацию.
+**Причина:** Групповой проект с ограниченным временем на первый этап разработки.
 
 **Обоснование:**
 - Отсутствие валидации — можно добавить позже, когда появятся формы создания/редактирования
 - Примитивное логирование — достаточно для отладки на этапе разработки
-- Нет Repository Pattern — можно рефакторить при добавлении новых сущностей
 
 ## 3.3 Пути улучшения архитектуры
 
-### Приоритет 1: Критичные улучшения (для следующей итерации)
+### Приоритет 1: Критичные улучшения (для следующего этапа разработки)
 
 #### 1.1 Внедрение валидации входных данных
 
@@ -465,17 +343,17 @@ if (!car) throw new AppError('Car not found', 404);
 
 ## 3.4 План рефакторинга
 
-### Этап 1: Подготовка (1-2 недели)
+### Этап 1: Подготовка (1-я неделя)
 - [ ] Добавить валидацию входных данных (Zod)
 - [ ] Внедрить структурированное логирование (Winston)
 - [ ] Стандартизировать обработку ошибок
 
-### Этап 2: Рефакторинг слоев (2-3 недели)
+### Этап 2: Рефакторинг слоев (1-я неделя)
 - [ ] Выделить Repository слой
 - [ ] Создать Service слой
 - [ ] Разделить Business логику
 
-### Этап 3: Миграция инфраструктуры (2-3 недели)
+### Этап 3: Миграция инфраструктуры (2-я неделя)
 - [ ] Миграция на PostgreSQL
 - [ ] Внедрение ORM (Prisma)
 - [ ] Настройка Docker Compose
@@ -501,8 +379,3 @@ if (!car) throw new AppError('Car not found', 404);
 - **Сквозная функциональность** (логирование, обработка ошибок) для production-ready системы
 
 Предложенный план рефакторинга позволяет **постепенно** улучшать архитектуру без необходимости полной переписи системы, следуя принципам **эволюционной архитектуры**.
-
----
-
-**Дата выполнения:** 2026-02-12  
-**Автор:** [Ваше имя]
