@@ -90,6 +90,18 @@ authRouter.patch('/me', requireAuth, (req, res) => {
   }
 });
 
+authRouter.delete('/me', requireAuth, (req, res) => {
+  try {
+    const db = getDb();
+    const result = db.prepare('DELETE FROM users WHERE id = ?').run(req.user.id);
+    if (result.changes === 0) return res.status(404).json({ error: 'Пользователь не найден' });
+    return res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Ошибка при удалении аккаунта' });
+  }
+});
+
 authRouter.post('/login', (req, res) => {
   try {
     const parsed = loginSchema.safeParse(req.body);

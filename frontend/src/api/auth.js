@@ -76,3 +76,13 @@ export async function updateProfile({ email, name }) {
   if (!res.ok) throw new Error(data.error || 'Ошибка обновления профиля');
   return data;
 }
+
+export async function deleteAccount() {
+  const res = await fetch(`${API_BASE}/me`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  if (res.status === 204) return;
+  const data = await res.json().catch(() => ({}));
+  throw new Error(data.error || 'Ошибка удаления аккаунта');
+}
