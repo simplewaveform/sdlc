@@ -50,3 +50,29 @@ export function getUser() {
 export function logout() {
   setSession(null);
 }
+
+function authHeaders() {
+  const token = getToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+export async function getMe() {
+  const res = await fetch(`${API_BASE}/me`, { headers: authHeaders() });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Ошибка загрузки профиля');
+  return data;
+}
+
+export async function updateProfile({ email, name }) {
+  const res = await fetch(`${API_BASE}/me`, {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ email, name }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Ошибка обновления профиля');
+  return data;
+}

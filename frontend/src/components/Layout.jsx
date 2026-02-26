@@ -28,7 +28,7 @@ export function Layout() {
         <nav className={styles.nav}>
           {user ? (
             <>
-              <span className={styles.userName}>{user.name || user.email}</span>
+              <Link to="/profile" className={styles.navLink}>{user.name || user.email}</Link>
               <button type="button" onClick={handleLogout} className={styles.navLink}>
                 Выйти
               </button>

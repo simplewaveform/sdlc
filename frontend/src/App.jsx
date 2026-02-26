@@ -3,6 +3,7 @@ import { Catalog } from './pages/Catalog';
 import { CarDetail } from './pages/CarDetail';
 import { Register } from './pages/Register';
 import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
 import { Layout } from './components/Layout';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/cars/:id" element={<CarDetail />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
     </Routes>
   );

@@ -18,6 +18,11 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Введите пароль'),
 });
 
+const updateProfileSchema = z.object({
+  email: z.string().email('Некорректный email').optional(),
+  name: z.string().max(200).optional(),
+});
+
 function userRow(row) {
   return row
     ? {
@@ -29,6 +34,61 @@ function userRow(row) {
       }
     : null;
 }
+
+function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ error: 'Требуется авторизация' });
+  }
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = { id: payload.sub, role: payload.role };
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Недействительный или истёкший токен' });
+  }
+}
+
+authRouter.get('/me', requireAuth, (req, res) => {
+  try {
+    const db = getDb();
+    const row = db
+      .prepare('SELECT id, email, name, role, created_at FROM users WHERE id = ?')
+      .get(req.user.id);
+    if (!row) return res.status(404).json({ error: 'Пользователь не найден' });
+    return res.json(userRow(row));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+authRouter.patch('/me', requireAuth, (req, res) => {
+  try {
+    const parsed = updateProfileSchema.safeParse(req.body);
+    if (!parsed.success) {
+      const msg = parsed.error.errors.map((e) => e.message).join('; ');
+      return res.status(400).json({ error: msg });
+    }
+    const { email, name } = parsed.data;
+    const db = getDb();
+    if (email !== undefined) {
+      const emailNorm = email.toLowerCase().trim();
+      const other = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(emailNorm, req.user.id);
+      if (other) return res.status(409).json({ error: 'Пользователь с таким email уже существует' });
+      db.prepare('UPDATE users SET email = ? WHERE id = ?').run(emailNorm, req.user.id);
+    }
+    if (name !== undefined) {
+      db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name || null, req.user.id);
+    }
+    const row = db.prepare('SELECT id, email, name, role, created_at FROM users WHERE id = ?').get(req.user.id);
+    return res.json(userRow(row));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Ошибка при обновлении профиля' });
+  }
+});
 
 authRouter.post('/login', (req, res) => {
   try {
