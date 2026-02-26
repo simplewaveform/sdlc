@@ -30,7 +30,7 @@ coverage/
 backend/data/
 
 # Lab reports (PDFs generated locally, not in repo)
-.pdf
+*.pdf
 
 # Misc
 *.tgz
