@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { initSchema } from './db/db.js';
 import { carsRouter } from './routes/cars.js';
+import { authRouter } from './routes/auth.js';
 
 initSchema();
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/cars', carsRouter);
+app.use('/api/auth', authRouter);
 
 app.get('/api/health', (_, res) => res.json({ ok: true }));
 

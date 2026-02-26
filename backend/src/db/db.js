@@ -33,4 +33,14 @@ export function initSchema() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      name TEXT,
+      role TEXT NOT NULL DEFAULT 'client',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
 }

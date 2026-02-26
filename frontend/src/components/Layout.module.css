@@ -9,6 +9,10 @@
   color: #eee;
   padding: 1rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .logo {
@@ -17,6 +21,20 @@
 }
 
 .logo:hover {
+  color: #fff;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.navLink {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.navLink:hover {
   color: #fff;
 }
 

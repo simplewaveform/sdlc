@@ -1,13 +1,16 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import styles from './Layout.module.css';
 
 export function Layout({ children }) {
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
-        <a href="/" className={styles.logo}>
+        <Link to="/" className={styles.logo}>
           Аренда авто
-        </a>
+        </Link>
+        <nav className={styles.nav}>
+          <Link to="/register" className={styles.navLink}>Регистрация</Link>
+        </nav>
       </header>
       <main className={styles.main}>
         <Outlet />
