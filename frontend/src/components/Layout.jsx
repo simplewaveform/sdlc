@@ -1,7 +1,24 @@
-import { Link, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { getUser, logout as logoutApi } from '../api/auth';
 import styles from './Layout.module.css';
 
-export function Layout({ children }) {
+export function Layout() {
+  const [user, setUser] = useState(() => getUser());
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const onAuthChange = () => setUser(getUser());
+    window.addEventListener('authChange', onAuthChange);
+    return () => window.removeEventListener('authChange', onAuthChange);
+  }, []);
+
+  const handleLogout = () => {
+    logoutApi();
+    window.dispatchEvent(new Event('authChange'));
+    navigate('/');
+  };
+
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
@@ -9,7 +26,19 @@ export function Layout({ children }) {
           Аренда авто
         </Link>
         <nav className={styles.nav}>
-          <Link to="/register" className={styles.navLink}>Регистрация</Link>
+          {user ? (
+            <>
+              <span className={styles.userName}>{user.name || user.email}</span>
+              <button type="button" onClick={handleLogout} className={styles.navLink}>
+                Выйти
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className={styles.navLink}>Войти</Link>
+              <Link to="/register" className={styles.navLink}>Регистрация</Link>
+            </>
+          )}
         </nav>
       </header>
       <main className={styles.main}>
