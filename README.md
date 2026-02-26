@@ -8,6 +8,16 @@
 
 ## Запуск
 
+**Всё сразу** (из корня проекта, после `npm install` в `backend` и `frontend`):
+
+```bash
+./start.sh
+```
+
+Бэкенд: http://localhost:3001, фронт: http://localhost:5173. Остановка: Ctrl+C.
+
+**По отдельности**
+
 **Бэкенд** (в папке `backend`):
 
 ```bash
