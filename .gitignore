@@ -29,6 +29,9 @@ coverage/
 # SQLite
 backend/data/
 
+# Lab reports (PDFs generated locally, not in repo)
+lr4/*.pdf
+
 # Misc
 *.tgz
 .cache/
