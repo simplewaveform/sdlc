@@ -52,11 +52,16 @@ function requireAuth(req, res, next) {
 
 authRouter.get('/me', requireAuth, (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store');
     const db = getDb();
+    const userId = Number(req.user.id);
     const row = db
       .prepare('SELECT id, email, name, role, created_at FROM users WHERE id = ?')
-      .get(req.user.id);
-    if (!row) return res.status(404).json({ error: 'Пользователь не найден' });
+      .get(userId);
+    if (!row) {
+      console.warn('[auth] GET /me: user id not found in DB', userId);
+      return res.status(401).json({ error: 'Сессия недействительна' });
+    }
     return res.json(userRow(row));
   } catch (err) {
     console.error(err);

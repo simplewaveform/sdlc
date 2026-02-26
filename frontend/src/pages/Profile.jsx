@@ -26,7 +26,15 @@ export function Profile() {
         }
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          if (err.status === 401 || err.status === 404) {
+            logout();
+            window.dispatchEvent(new Event('authChange'));
+            navigate('/login', { replace: true });
+            return;
+          }
+          setError(err.message);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
