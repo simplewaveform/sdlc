@@ -32,6 +32,9 @@ backend/data/
 # Lab reports (PDFs generated locally, not in repo)
 *.pdf
 
+# Lab 5 provided articles (keep outside git)
+lr5/article*.txt
+
 # Misc
 *.tgz
 .cache/
